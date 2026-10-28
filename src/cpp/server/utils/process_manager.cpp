@@ -1,6 +1,8 @@
 #include <lemon/utils/process_manager.h>
 #include <lemon/utils/process_platform.h>
 
+#include <stdexcept>
+
 namespace lemon {
 namespace utils {
 
@@ -16,9 +18,12 @@ ProcessHandle ProcessManager::start_process(
     return platform->spawn(executable, args, working_dir, inherit_output, filter_health_logs, env_vars);
 }
 
-void ProcessManager::stop_process(ProcessHandle handle) {
+void ProcessManager::stop_process(ProcessHandle handle, int timeout_seconds) {
+    if (timeout_seconds < 0) {
+        throw std::invalid_argument("Process stop timeout must not be negative");
+    }
     auto platform = create_process_platform();
-    platform->terminate(handle);
+    platform->terminate(handle, timeout_seconds);
 }
 
 bool ProcessManager::is_running(ProcessHandle handle) {

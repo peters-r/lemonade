@@ -443,6 +443,13 @@ The following options are available depending on the recipe being used:
 | `--ctx-size SIZE` | Context size for the model | auto |
 | `--ds4-args ARGS` | Custom arguments to pass to ds4-server | `""` |
 
+#### Strixite (`strixite` recipe)
+
+| Option | Description | Default |
+|--------|-------------|---------|
+| `--ctx-size SIZE` | Context size for the model | auto |
+| `--strixite-args ARGS` | Custom arguments to pass to strix_server | `""` |
+
 #### ThinkSound (`thinksound` recipe)
 
 | Option | Description | Default |

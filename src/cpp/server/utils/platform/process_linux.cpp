@@ -103,7 +103,7 @@ public:
         bool filter_health_logs,
         const std::vector<std::pair<std::string, std::string>>& env_vars) override;
 
-    void terminate(ProcessHandle handle) override;
+    void terminate(ProcessHandle handle, int timeout_seconds) override;
     bool is_running(ProcessHandle handle) override;
     int get_exit_code(ProcessHandle handle) override;
     int wait_for_exit(ProcessHandle handle, int timeout_seconds) override;
@@ -304,7 +304,7 @@ ProcessHandle LinuxProcessPlatform::spawn(
     return handle;
 }
 
-void LinuxProcessPlatform::terminate(ProcessHandle handle) {
+void LinuxProcessPlatform::terminate(ProcessHandle handle, int timeout_seconds) {
     if (handle.pid <= 0) {
         return;
     }
@@ -338,7 +338,8 @@ void LinuxProcessPlatform::terminate(ProcessHandle handle) {
 
     int status = 0;
     bool exited_gracefully = false;
-    for (int i = 0; i < 50; ++i) {
+    const auto deadline = std::chrono::steady_clock::now() + std::chrono::seconds(timeout_seconds);
+    for (;;) {
         pid_t result = waitpid(handle.pid, &status, WNOHANG);
         if (result > 0) {
             exited_gracefully = true;
@@ -346,6 +347,9 @@ void LinuxProcessPlatform::terminate(ProcessHandle handle) {
         }
         if (result < 0 && errno == ECHILD) {
             exited_gracefully = true;
+            break;
+        }
+        if (std::chrono::steady_clock::now() >= deadline) {
             break;
         }
         std::this_thread::sleep_for(std::chrono::milliseconds(100));

@@ -1,4 +1,17 @@
 {
+    "Qwen3.8-Flash-Next-Strixite": {
+        "checkpoint": "wemoh/Qwen3.8-Flash-Next-strixw",
+        "recipe": "strixite",
+        "suggested": false,
+        "labels": [
+            "chat",
+            "tool-calling",
+            "reasoning",
+            "vision"
+        ],
+        "size": 123.6,
+        "min_resident_gb": 80.0
+    },
     "Qwen2.5-0.5B-Instruct-CPU": {
         "checkpoint": "amd/Qwen2.5-0.5B-Instruct-quantized_int4-float16-cpu-onnx",
         "recipe": "ryzenai-llm",

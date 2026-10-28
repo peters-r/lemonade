@@ -48,6 +48,25 @@ pid_t spawn_running_child() {
     return pid;
 }
 
+pid_t spawn_unresponsive_child() {
+    int ready[2];
+    if (pipe(ready) != 0) return -1;
+    const pid_t pid = fork();
+    if (pid == 0) {
+        close(ready[0]);
+        signal(SIGTERM, SIG_IGN);
+        const char marker = 'R';
+        if (write(ready[1], &marker, 1) != 1) _exit(1);
+        close(ready[1]);
+        for (;;) pause();
+    }
+    close(ready[1]);
+    char marker = 0;
+    const bool initialized = pid > 0 && read(ready[0], &marker, 1) == 1 && marker == 'R';
+    close(ready[0]);
+    return initialized ? pid : -1;
+}
+
 bool is_zombie(pid_t pid) {
     std::ifstream stat_file("/proc/" + std::to_string(pid) + "/stat");
     std::string stat_line;
@@ -128,6 +147,21 @@ int main() {
     check("is_running() rejects non-existent PID",
           !ProcessManager::is_running(
               make_handle(std::numeric_limits<int>::max())));
+
+    {
+        const pid_t child = spawn_unresponsive_child();
+        check("fork child ignoring SIGTERM", child > 0);
+        if (child > 0) {
+            const auto started = std::chrono::steady_clock::now();
+            ProcessManager::stop_process(make_handle(child), 1);
+            check("custom stop timeout bounds termination of an unresponsive child",
+                  std::chrono::steady_clock::now() - started < std::chrono::seconds(5));
+            int status = 0;
+            errno = 0;
+            check("forced termination reaps the child",
+                  waitpid(child, &status, WNOHANG) == -1 && errno == ECHILD);
+        }
+    }
 
     if (failures == 0) {
         std::printf("\nAll process_manager tests passed\n");

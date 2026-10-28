@@ -15,6 +15,7 @@ const RECIPE_PRIORITY = [
   'openmoss',
   'ryzenai-llm',
   'sd-cpp',
+  'strixite',
   'thenoise',
   'thinksound',
   'trellis',

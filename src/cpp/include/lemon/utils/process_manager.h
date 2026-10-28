@@ -35,7 +35,7 @@ public:
         int timeout_seconds = -1,
         bool capture_stderr = true);
 
-    static void stop_process(ProcessHandle handle);
+    static void stop_process(ProcessHandle handle, int timeout_seconds = 5);
 
     // Must be non-mutating: on POSIX it must not reap the child, because
     // status/health checks may call this frequently.

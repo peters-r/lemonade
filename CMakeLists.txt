@@ -233,6 +233,7 @@ set(LEMON_BACKENDS
     "vllm|vllm"
     "thenoise|thenoise"
     "ds4|ds4"
+    "strixite|strixite"
     "cloud|cloud"
     "thinksound|thinksound"
     "acestep|acestep"
@@ -3769,6 +3770,12 @@ if(BUILD_TESTING AND EXISTS "${_GPU_ENV_TEST_SRC}")
     add_executable(test_backend_utils_gpu_env test/cpp/test_backend_utils_gpu_env.cpp)
     target_link_libraries(test_backend_utils_gpu_env PRIVATE lemonade-server-core)
     add_cpp_ci_test(BackendUtilsGpuEnvTest CI ON COMMAND test_backend_utils_gpu_env)
+endif()
+
+if(BUILD_TESTING AND CMAKE_SYSTEM_NAME STREQUAL "Linux")
+    add_executable(test_strixite_backend test/cpp/test_strixite_backend.cpp)
+    target_link_libraries(test_strixite_backend PRIVATE lemonade-server-core)
+    add_cpp_ci_test(StrixiteBackendTest CI ON COMMAND test_strixite_backend)
 endif()
 
 set(_LLAMACPP_SYSTEM_BACKEND_TEST_SRC

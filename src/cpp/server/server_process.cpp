@@ -44,7 +44,7 @@ void ServerProcess::stop() {
     if (ProcessManager::is_running(handle_)) {
         LOG(INFO, "ServerProcess") << "Stopping " << command_line_.front() << " (PID "
                                    << handle_.pid << ")" << std::endl;
-        ProcessManager::stop_process(handle_);
+        ProcessManager::stop_process(handle_, stop_timeout_seconds_);
     } else {
         const int exit_code = ProcessManager::reap_process(handle_);
         LOG(ERROR, "ServerProcess") << command_line_.front() << " (PID " << handle_.pid
@@ -58,6 +58,10 @@ bool ServerProcess::running() const {
 }
 
 std::string NativeProcess::start(const ServerCommand& command) {
+    if (command.stop_timeout_seconds < 0) {
+        throw std::invalid_argument("Backend stop timeout must not be negative");
+    }
+    stop_timeout_seconds_ = command.stop_timeout_seconds;
     std::vector<std::string> command_line = {command.program};
     command_line.insert(command_line.end(), command.args.begin(), command.args.end());
     spawn(std::move(command_line), working_dir_, command.env);
