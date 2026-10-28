@@ -353,10 +353,13 @@ public:
         return handle;
     }
 
-    void terminate(ProcessHandle handle) override {
+    void terminate(ProcessHandle handle, int timeout_seconds) override {
         if (handle.handle) {
             TerminateProcess(handle.handle, 0);
-            WaitForSingleObject(handle.handle, 5000);  // Wait up to 5 seconds
+            const auto timeout_ms = std::chrono::duration_cast<std::chrono::milliseconds>(
+                std::chrono::seconds(timeout_seconds)).count();
+            WaitForSingleObject(handle.handle,
+                static_cast<DWORD>(std::min<decltype(timeout_ms)>(timeout_ms, INFINITE - 1)));
             CloseHandle(handle.handle);
         }
     }

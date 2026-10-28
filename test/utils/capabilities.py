@@ -38,6 +38,25 @@ def get_current_config():
 
 CAPABILITIES = {
     "llm": {
+        "strixite": {
+            "backends": ["system"],
+            "supports": {
+                "chat_completions": True,
+                "chat_completions_streaming": True,
+                "chat_completions_async": True,
+                "completions": True,
+                "completions_streaming": True,
+                "completions_async": True,
+                "tool_calls": True,
+                "tool_calls_streaming": True,
+                "stop_parameter": True,
+                "static_max_context_window": True,
+            },
+            "test_models": {
+                "llm": "Qwen3.8-Flash-Next-Strixite",
+                "tool_calling": "Qwen3.8-Flash-Next-Strixite",
+            },
+        },
         "llamacpp": {
             "backends": [
                 "vulkan",

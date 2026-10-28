@@ -21,7 +21,7 @@ public:
         bool filter_health_logs,
         const std::vector<std::pair<std::string, std::string>>& env_vars) = 0;
 
-    virtual void terminate(ProcessHandle handle) = 0;
+    virtual void terminate(ProcessHandle handle, int timeout_seconds) = 0;
     virtual bool is_running(ProcessHandle handle) = 0;
     virtual int get_exit_code(ProcessHandle handle) = 0;
     virtual int wait_for_exit(ProcessHandle handle, int timeout_seconds) = 0;

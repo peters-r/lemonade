@@ -13,6 +13,7 @@ struct ServerCommand {
     std::vector<std::string> args;
     std::vector<std::pair<std::string, std::string>> env;
     int port = 0;
+    int stop_timeout_seconds = 5;
     // Polled until it answers before the load completes, then polled by the
     // backend watchdog for as long as the server runs.
     std::string ready_endpoint = "/health";
@@ -48,6 +49,7 @@ protected:
 
     utils::ProcessHandle handle_{nullptr, 0};
     std::vector<std::string> command_line_;
+    int stop_timeout_seconds_ = 5;
 
 private:
     ProcessOutput output_;

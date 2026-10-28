@@ -1357,16 +1357,12 @@ json SystemInfo::build_recipes_info(const json& devices) {
 
         // Special case for 'system' backend: it's either installed or unsupported.
         // It's never 'installable' because Lemonade cannot install system packages.
-        if (def.backend == "system") {
-            if (available) {
-                supported = true; // Ensure it's not marked unsupported due to device logic
-            } else {
-                supported = false;
-                // Only set generic error if a specific error wasn't already set
-                if (install_error.empty()) {
-                    auto* spec = backends::try_get_spec_for_recipe(def.recipe);
-                    install_error = (spec ? spec->binary : "binary") + " not found in PATH";
-                }
+        if (def.backend == "system" && !available) {
+            supported = false;
+            // Only set generic error if a specific error wasn't already set
+            if (install_error.empty()) {
+                auto* spec = backends::try_get_spec_for_recipe(def.recipe);
+                install_error = (spec ? spec->binary : "binary") + " not found in PATH";
             }
         }
 
